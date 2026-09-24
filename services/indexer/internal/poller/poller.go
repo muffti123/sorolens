@@ -177,6 +177,7 @@ func (p *Poller) processAll(ctx context.Context) error {
 		p.runAnomalyDetection(ctx)
 	}
 	p.runHealthScores(ctx)
+	p.runAlertRules(ctx)
 	return nil
 }
 
