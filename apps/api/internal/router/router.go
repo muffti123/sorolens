@@ -96,6 +96,17 @@ func New(h *handler.Handler) http.Handler {
 		get("/watchdog/contracts/{id}", h.GetMonitoredContract)
 		get("/watchdog/contracts/{id}/health", h.ListHealthChecks)
 		get("/watchdog/contracts/{id}/alerts", h.ListWatchdogAlerts)
+
+		// User-defined alert rules (DSL). Reads are open; writes require a
+		// contributor. The samples/preview sub-routes are registered before the
+		// {id} route so "samples" and "preview" are never captured as an id.
+		r.With(scope, contributor).Post("/rules", h.CreateRule)
+		get("/rules", h.ListRules)
+		get("/rules/samples", h.ListRuleSamples)
+		r.With(scope, contributor).Post("/rules/preview", h.PreviewRule)
+		get("/rules/{id}", h.GetRule)
+		r.With(scope, contributor).Put("/rules/{id}", h.UpdateRule)
+		r.With(scope, contributor).Delete("/rules/{id}", h.DeleteRule)
 	})
 
 	return r
