@@ -25,6 +25,7 @@ type MockStore struct {
 	users              map[string]User
 	healthScores       map[string]ContractHealthScore
 	indexerCursors     map[string]uint32
+	rules              []AlertRule
 
 	// Error injection
 	UpsertContractErr   error
@@ -55,6 +56,7 @@ func NewMockStore() *MockStore {
 		alertSubscriptions: make([]AlertSubscription, 0),
 		users:              make(map[string]User),
 		indexerCursors:     make(map[string]uint32),
+		rules:              make([]AlertRule, 0),
 	}
 }
 
