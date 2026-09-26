@@ -37,6 +37,7 @@ type Store interface {
 	// page. Returns the next cursor (empty string when there are no more
 	// pages) as the second return value.
 	ListContracts(ctx context.Context, cursor string, limit int, f ContractFilters) ([]Contract, string, error)
+	SearchContracts(ctx context.Context, query string, limit int) ([]Contract, error)
 
 	// BatchInsertEvents inserts events, ignoring duplicates by primary key.
 	// All rows are sent in a single network round-trip.
@@ -77,6 +78,20 @@ type Store interface {
 	// If any operation fails or the process crashes mid-poll before commit,
 	// the entire batch is rolled back atomically.
 	BatchInsertWithCursor(ctx context.Context, network string, ledger uint32, events []Event, invocations []Invocation, syncState SyncState) error
+
+	// RecordContractVersion appends a new entry to the contract_versions table
+	// if the given wasm_hash has not been seen before for this contract.
+	// It is a no-op (returns nil) when the (contract_id, wasm_hash) pair already
+	// exists, making repeated indexer calls idempotent.
+	RecordContractVersion(ctx context.Context, v ContractVersion) error
+
+	// ListContractVersions returns all recorded Wasm hash entries for the given
+	// contract, sorted chronologically by first_seen_ledger ascending.
+	ListContractVersions(ctx context.Context, contractID string) ([]ContractVersion, error)
+
+	// GetLatestContractVersion returns the most recently seen ContractVersion for
+	// the given contract. Returns ErrNotFound when no version has been recorded yet.
+	GetLatestContractVersion(ctx context.Context, contractID string) (ContractVersion, error)
 }
 
 // AlertSubscriptionStore is the read/write surface for alert webhook subscriptions.
@@ -85,6 +100,19 @@ type AlertSubscriptionStore interface {
 	ListByContract(ctx context.Context, contractID string) ([]AlertSubscription, error)
 	Delete(ctx context.Context, id string) error
 	ListAll(ctx context.Context) ([]AlertSubscription, error)
+}
+
+// ContractTagStore is the read/write surface for user-defined contract tags.
+// Tags are stored in the contract_tags table, one row per (contract, tag).
+type ContractTagStore interface {
+	// AddContractTag adds a tag to a contract. Adding an existing tag is a
+	// no-op (idempotent).
+	AddContractTag(ctx context.Context, contractID, tag string) error
+	// RemoveContractTag removes a tag from a contract. Removing a tag that
+	// is not present is a no-op (idempotent).
+	RemoveContractTag(ctx context.Context, contractID, tag string) error
+	// ListContractTags returns a contract's tags in ascending order.
+	ListContractTags(ctx context.Context, contractID string) ([]string, error)
 }
 
 // WatchlistStore is the interface for per-user watchlist (bookmark) operations.
@@ -115,6 +143,13 @@ type UserStore interface {
 	GetUserByGitHubID(ctx context.Context, githubID string) (User, error)
 }
 
+// LabelStore persists public and workspace-scoped human-readable identifiers.
+type LabelStore interface {
+	UpsertLabel(ctx context.Context, label Label) error
+	ListLabels(ctx context.Context, workspaceID, query string) ([]Label, error)
+	ResolveLabel(ctx context.Context, workspaceID, query string) (Label, error)
+}
+
 // ContractFilters holds optional query filters for listing contracts.
 type ContractFilters struct {
 	// Network restricts results to one of testnet | mainnet | futurenet.
@@ -123,6 +158,9 @@ type ContractFilters struct {
 	// Status restricts results to one contract status (e.g. "active").
 	// Empty means all statuses.
 	Status string
+	// Tag restricts results to contracts carrying this tag. Empty means
+	// no tag filter.
+	Tag string
 }
 
 // NewStore returns a Store backed by the given pgxpool.Pool.

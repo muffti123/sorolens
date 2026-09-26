@@ -25,14 +25,6 @@ type Store interface {
 	CreateNextMonthPartition(ctx context.Context) error
 	CreateMonthlyPartitionIfNotExists(ctx context.Context, year int, month int) error
 
-	// GetIndexerCursor returns the last committed ledger for a network, or 0 if none.
-	GetIndexerCursor(ctx context.Context, network string) (uint32, error)
-	// SetIndexerCursor updates the last committed ledger for a network.
-	SetIndexerCursor(ctx context.Context, network string, ledger uint32) error
-	// BatchInsertWithCursor atomically writes events, invocations, contract sync state,
-	// and advances the network indexer cursor within a single database transaction.
-	BatchInsertWithCursor(ctx context.Context, network string, ledger uint32, events []Event, invocations []Invocation, syncState SyncState) error
-
 	// RecentHourlyActivity returns per-hour activity buckets for the most
 	// recent `hours` hours (oldest first), aggregated across events and
 	// invocations. Used by the anomaly detector to build a rolling baseline.
@@ -169,6 +161,16 @@ type Event struct {
 	TopicXDR         []string
 	ValueXDR         string
 	InSuccessfulCall bool
+}
+
+// FailedEvent mirrors store.FailedEvent for the indexer DLQ (issue #202).
+type FailedEvent struct {
+	EventID      string
+	ContractID   string
+	Network      string
+	EventPayload []byte
+	ErrorMessage string
+	Attempts     int
 }
 
 // Invocation mirrors store.Invocation.
