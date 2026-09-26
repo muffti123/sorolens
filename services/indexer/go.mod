@@ -3,6 +3,7 @@ module github.com/sorolens/sorolens/services/indexer
 go 1.25.0
 
 require (
+	github.com/sorolens/sorolens/packages/rules v0.0.0
 	go.opentelemetry.io/otel v1.46.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.46.0
 	go.opentelemetry.io/otel/sdk v1.46.0

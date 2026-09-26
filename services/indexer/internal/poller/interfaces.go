@@ -53,6 +53,12 @@ type Store interface {
 	ContractHealthInputs(ctx context.Context, contractID string) (HealthInputs, error)
 	// UpsertContractHealthScore caches a computed 0-100 health score.
 	UpsertContractHealthScore(ctx context.Context, h ContractHealthScore) error
+
+	// ListRules returns all enabled alert rules for evaluation.
+	ListRules(ctx context.Context) ([]AlertRule, error)
+	// RuleWindowStats fetches per-invocation samples plus the event count for
+	// one contract over the trailing window, feeding the DSL evaluator.
+	RuleWindowStats(ctx context.Context, contractID string, window time.Duration) (WindowStats, error)
 }
 
 // RedisClient is the subset of Redis operations the poller needs for advisory locks.
@@ -227,4 +233,34 @@ type ContractHealthScore struct {
 	ComponentPerformance int32
 	ComponentStorageTTL  int32
 	ComputedAt           time.Time
+}
+
+// AlertRule mirrors store.AlertRule.
+type AlertRule struct {
+	ID         string
+	Name       string
+	Expression string
+	ContractID string
+	Network    string
+	Severity   string
+	Enabled    bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}
+
+// WindowStats mirrors rules.WindowStats.
+type WindowStats struct {
+	Duration    time.Duration
+	Invocations []InvocationSample
+	Events      int64
+}
+
+// InvocationSample mirrors rules.InvocationSample.
+type InvocationSample struct {
+	Status      string
+	Timestamp   time.Time
+	FeeStroops  int64
+	CPUInsn     int64
+	MemBytes    int64
+	LedgerBytes int64
 }

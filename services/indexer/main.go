@@ -290,6 +290,12 @@ func (s *stubStore) ContractHealthInputs(_ context.Context, _ string) (poller.He
 func (s *stubStore) UpsertContractHealthScore(_ context.Context, _ poller.ContractHealthScore) error {
 	return nil
 }
+func (s *stubStore) ListRules(ctx context.Context) ([]poller.AlertRule, error) {
+	return nil, nil
+}
+func (s *stubStore) RuleWindowStats(ctx context.Context, contractID string, window time.Duration) (poller.WindowStats, error) {
+	return poller.WindowStats{Duration: window}, nil
+}
 
 type stubRedis struct{}
 
