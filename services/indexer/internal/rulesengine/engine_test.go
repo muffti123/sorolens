@@ -31,13 +31,20 @@ func (f *fakeStore) InsertAlert(_ context.Context, a Alert) error {
 	return nil
 }
 
+// testNow is the clock the engine is pinned to in tests. series() builds its
+// buckets relative to it, so the two must agree or the engine's sample window
+// will not line up with the samples.
+var testNow = time.Date(2026, 9, 27, 12, 0, 0, 0, time.UTC)
+
 func testEngine(store Store) *Engine {
-	return New(store, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	e := New(store, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	e.now = func() time.Time { return testNow }
+	return e
 }
 
-// series builds per-minute buckets ending now, with the given error_rate.
+// series builds per-minute buckets ending at testNow, with the given error_rate.
 func series(values ...float64) []Sample {
-	now := time.Date(2026, 9, 27, 12, 0, 0, 0, time.UTC)
+	now := testNow
 	start := now.Add(-time.Duration(len(values)) * time.Minute)
 	out := make([]Sample, 0, len(values))
 	for i, v := range values {
