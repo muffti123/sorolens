@@ -103,8 +103,9 @@ samples so the dashboard editor can show the verdict live.
 
 ## Where it runs
 
-The grammar, validator, and evaluator live in `packages/rulelang`, a
-workspace module shared by the API and the indexer. The indexer's
+The grammar, validator, and evaluator live in `apps/api/rulelang`, a leaf
+package with no dependencies. The API uses it to validate and store rules; the
+indexer imports the same package through the Go workspace, and its
 `internal/rulesengine` evaluates enabled rules at the end of every poll pass
 and raises an alert for each firing rule.
 
@@ -112,4 +113,4 @@ and raises an alert for each firing rule.
 
 `rulelang.Library()` ships a set of validated starter rules, surfaced at
 `GET /api/v1/rules/library` and in the dashboard editor. See
-`packages/rulelang/library.go`.
+`apps/api/rulelang/library.go`.

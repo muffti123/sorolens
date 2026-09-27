@@ -1,4 +1,4 @@
-// Package rulesengine evaluates user-defined alert rules (packages/rulelang)
+// Package rulesengine evaluates user-defined alert rules (apps/api/rulelang)
 // inside the indexer's poll loop and raises an alert when one fires.
 //
 // The engine is deliberately decoupled from the concrete database: it depends
@@ -13,7 +13,7 @@ import (
 	"log/slog"
 	"time"
 
-	rulelang "github.com/sorolens/sorolens/packages/rulelang"
+	rulelang "github.com/sorolens/sorolens/apps/api/rulelang"
 )
 
 // DefaultWindow is the sample window used for a rule with no `for` clause.

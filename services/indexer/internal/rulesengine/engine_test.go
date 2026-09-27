@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	rulelang "github.com/sorolens/sorolens/packages/rulelang"
+	rulelang "github.com/sorolens/sorolens/apps/api/rulelang"
 )
 
 type fakeStore struct {

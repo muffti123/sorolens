@@ -2,7 +2,7 @@
 -- 000014_alert_rules
 --
 -- User-defined alert rules expressed in the Sorolens rule
--- language (packages/rulelang). A rule is stored as its source
+-- language (apps/api/rulelang). A rule is stored as its source
 -- text alongside the parsed summary fields the indexer needs to
 -- evaluate it without re-parsing on every pass.
 --

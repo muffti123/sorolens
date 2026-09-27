@@ -1,5 +1,5 @@
 // Lightweight tokenizer for the Sorolens alert rule language
-// (packages/rulelang). It powers the editor's syntax highlighting and the
+// (apps/api/rulelang). It powers the editor's syntax highlighting and the
 // error-position gutter. It is intentionally permissive: unknown words are
 // emitted as "metric" so a half-typed rule still highlights sensibly, and the
 // server-side validator remains the source of truth.
@@ -43,7 +43,7 @@ export const RULE_UNITS = new Set([
 ]);
 
 /**
- * The metric catalog, mirrored from packages/rulelang/catalog.go. The editor
+ * The metric catalog, mirrored from apps/api/rulelang/catalog.go. The editor
  * additionally renders the live catalog returned by
  * GET /api/v1/rules/metrics; this set only drives highlighting.
  */

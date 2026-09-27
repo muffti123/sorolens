@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sorolens/sorolens/apps/api/internal/store"
-	rulelang "github.com/sorolens/sorolens/packages/rulelang"
+	rulelang "github.com/sorolens/sorolens/apps/api/rulelang"
 )
 
 // ---- shared types ----------------------------------------------------------

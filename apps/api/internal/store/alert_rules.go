@@ -23,7 +23,7 @@ type MetricSample struct {
 }
 
 // AlertRule is a user-defined rule in the Sorolens rule language
-// (packages/rulelang). It corresponds to one row in the alert_rules table.
+// (apps/api/rulelang). It corresponds to one row in the alert_rules table.
 type AlertRule struct {
 	ID         int64
 	Name       string

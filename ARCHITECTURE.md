@@ -905,8 +905,9 @@ end of every pass.
 Reads carry the `read:contracts` scope; authoring carries `write:contracts` and
 the `contributor` role, like contract registration.
 
-The language itself lives in `packages/rulelang` (a workspace module shared by
-the API and the indexer): a hand-rolled lexer and recursive-descent parser, a
+The language itself lives in `apps/api/rulelang` (a dependency-free leaf
+package imported by the indexer through the Go workspace): a hand-rolled lexer
+and recursive-descent parser, a
 closed metric catalog with units, semantic validation with "did you mean"
 hints, and a windowed evaluator supporting `avg`, `max`, `min`, `sum`, `rate`,
 and `count` over a `for` window. `GET /api/v1/rules/metrics` drives the

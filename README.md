@@ -167,13 +167,13 @@ Admin: `GAZ3HN2QNDKWLOI2OQEG65KBJEAUP4PROR3FJNXNDY34UH547MN4CJUI`
 sorolens/
   apps/
     api/          Go API (Vercel serverless functions)
+    api/rulelang/ Alert-rule language: parser, validator, evaluator (imported by the indexer)
     web/          Next.js 15 dashboard (landing page + /contracts + /watchdog + /playground)
   services/
     indexer/      Go indexer worker (+ internal/watchdog event classifier)
   packages/
     xdr/          TypeScript XDR decoder
     ui/           Shared React UI primitives
-    rulelang/     Go alert-rule language: parser, validator, evaluator (shared by API + indexer)
     go-client/    Auto-generated Go API client (from docs/openapi.yaml)
     python-sdk/   Official Python API client, sync + async (from docs/openapi.yaml)
   cli/            Go CLI (cobra)
