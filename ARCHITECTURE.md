@@ -884,6 +884,40 @@ the chi route table and fails if a v1 route has no v2 counterpart.
 
 ---
 
+### 4.11 Alert rules
+
+User-defined alert rules are the one surface where clients author logic rather
+than query data. A rule is a string in the Sorolens rule language; the API
+validates it before storing it, and the indexer evaluates enabled rules at the
+end of every pass.
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/api/v1/rules` | List stored rules. |
+| `POST` | `/api/v1/rules` | Create a rule (validated; `422` with a positioned diagnostic on failure). |
+| `PATCH` | `/api/v1/rules/{id}` | Enable or pause a rule. |
+| `DELETE` | `/api/v1/rules/{id}` | Delete a rule. |
+| `POST` | `/api/v1/rules/validate` | Validate rule text without writing. |
+| `POST` | `/api/v1/rules/preview` | Evaluate against the contract's recent metric samples. |
+| `GET` | `/api/v1/rules/metrics` | The closed metric catalog. |
+| `GET` | `/api/v1/rules/library` | Curated starter rules. |
+
+Reads carry the `read:contracts` scope; authoring carries `write:contracts` and
+the `contributor` role, like contract registration.
+
+The language itself lives in `packages/rulelang` (a workspace module shared by
+the API and the indexer): a hand-rolled lexer and recursive-descent parser, a
+closed metric catalog with units, semantic validation with "did you mean"
+hints, and a windowed evaluator supporting `avg`, `max`, `min`, `sum`, `rate`,
+and `count` over a `for` window. `GET /api/v1/rules/metrics` drives the
+dashboard editor's autocomplete, and `POST /api/v1/rules/preview` runs the same
+evaluator so the preview matches the indexer exactly.
+
+See [`docs/rule-language.md`](docs/rule-language.md) for the grammar and metric
+reference.
+
+---
+
 ## 5. Design Decisions with Rationale
 
 ### 5.1 Cron-driven indexer over a persistent worker

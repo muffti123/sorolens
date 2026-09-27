@@ -140,6 +140,18 @@ func New(h *handler.Handler, maxBodyBytes int64) http.Handler {
 		// GET /api/v1/alerts          — grouped view (default)
 		// GET /api/v1/alerts?flat=true — raw ContractAlert feed
 		get("/alerts", h.ListAlerts)
+		// User-defined alert rules (rule language). Reads are public like the
+		// rest of the v0.1 surface; authoring mutates shared state, so it needs
+		// the contributor role like contract registration.
+		get("/rules", h.ListRules)
+		get("/rules/metrics", h.ListRuleMetrics)
+		get("/rules/library", h.ListRuleLibrary)
+		r.With(scope).Post("/rules/validate", h.ValidateRule)
+		r.With(scope).Post("/rules/preview", h.PreviewRule)
+		r.With(scope, contributor).Post("/rules", h.CreateRule)
+		r.With(scope, contributor).Patch("/rules/{id}", h.SetRuleEnabled)
+		r.With(scope, contributor).Delete("/rules/{id}", h.DeleteRule)
+
 		// Search contracts (issue #181)
 		get("/search", h.SearchContracts)
 

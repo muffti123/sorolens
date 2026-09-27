@@ -19,6 +19,7 @@ Soroban's public RPC retains events for 24 hours and transaction data for up to 
 - **Storage tracking**: snapshot of every temporary, persistent, and instance storage entry, with TTL health.
 - **Watchdog monitoring** *(new)*: the on-chain `sorolens-watchdog` Soroban contract lets any contract owner register a contract, push health status, and raise alerts. Sorolens indexes those events and materialises them into a dashboard, giving you the only proactive-monitoring path on Stellar without a centralised heartbeat service.
 - **Alerting**: when persistent storage entries are within a configurable number of ledgers of expiry, or when a monitored contract goes `Unresponsive`.
+- **Custom alert rules**: a small expression language lets each team encode its own SLOs without a code change — `fee_per_invocation > 0.5 XLM for 5m on network testnet`. Rules are validated on save, editable with syntax highlighting and a live preview in the dashboard, and evaluated by the indexer every pass. See [`docs/rule-language.md`](docs/rule-language.md).
 - **Multi-network**: track and query testnet, mainnet, and futurenet contracts side by side, with a network selector in the dashboard header and a `?network=` filter on every list endpoint.
 - **Snapshot / replay**: `GET /api/v1/contracts/:id/snapshot?ledger=N` replays a contract's storage state and last known event as of any ledger, with a ledger scrubber on the contract page for time-travel debugging.
 - **Scoped API keys**: per-key permissions (`read:contracts`, `write:contracts`, `read:watchdog`, `admin:*`) enforced by route metadata, so a monitoring bot can hold a read-only watchdog key.
@@ -172,6 +173,7 @@ sorolens/
   packages/
     xdr/          TypeScript XDR decoder
     ui/           Shared React UI primitives
+    rulelang/     Go alert-rule language: parser, validator, evaluator (shared by API + indexer)
     go-client/    Auto-generated Go API client (from docs/openapi.yaml)
     python-sdk/   Official Python API client, sync + async (from docs/openapi.yaml)
   cli/            Go CLI (cobra)
